@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Auditoría</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            background: white;
+            padding: 20px;
+            margin: auto;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            max-width: 150px;
+        }
+        .calificacion {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: green;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+            color: white;
+        }
+        .select-box {
+            width: 100%;
+            padding: 5px;
+        }
+        .input-box {
+            width: 100%;
+            padding: 5px;
+        }
+        .error {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="logo-accessone.png" alt="AccessOne Logo" class="logo">
+        <h1>Checklist de Auditoría</h1>
+
+        <div class="calificacion" id="calificacion">Calificación: 100%</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Pregunta</th>
+                    <th>Respuesta</th>
+                    <th>Comentario</th>
+                </tr>
+            </thead>
+            <tbody id="checklist-body">
+                <!-- Preguntas Generadas Automáticamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Lista de preguntas
+        const preguntas = [
+            "Cuenta con Licencia OK VIGENTE?",
+            "Cuenta con Póliza de Seguro Vigente?",
+            "Cuenta con hologramas de PROFECO vigentes en cada equipo?",
+            "El personal operativo cuenta con seguro social vigente?",
+            "El estacionamiento cuenta con encargado(s) o responsable?",
+            "La plantilla de cajeros y/o auxiliares completa?",
+            "¿Quejas recibidas de tienda en estos 30 días?",
+            "El personal cuenta con las siguientes características: Uniforme completo y en buen estado, gafete de identificación?",
+            "El personal conoce y aplica el plan de contingencia?",
+            "Cuenta con directorio de servicio de emergencia actualizado?",
+            "Todas las entradas y salidas abiertas?",
+            "Emisor de boletos por cada entrada y salida funcionando?",
+            "Funcionan todos los cajeros de pago?",
+            "Validadora (receptora) y TPV en cada salida y funcionando?",
+            "Se cuenta con interfonía en el estacionamiento?",
+            "Cuentan con CCTV y funcionan correctamente?",
+            "Se realiza mantenimiento UPS / tiene alguna falla cuál es?",
+            "Las casetas se encuentran en servicio dentro del horario de la tienda y en buenas condiciones?",
+            "La funcionalidad de POS opera adecuadamente?",
+            "Imagen de los equipos: hojalatería, pintura, limpieza, anclaje correcto?",
+            "Oficina Administrativa en buenas condiciones?",
+            "Cuenta con catálogo de firmas actualizado de gerencias?",
+            "Cuenta con Kit de auxilio vial?",
+            "Los tótems y señalamientos cuentan con la información completa, actualizada y en buenas condiciones?",
+            "Se realiza el mantenimiento preventivo de equipos?",
+            "El estacionamiento presenta baches?",
+            "Los registros se encuentran en buen estado?",
+            "Se ejecuta el plan de pintura de acuerdo al calendario compartido anualmente?",
+            "La pintura en cajones se encuentra en buenas condiciones?",
+            "La pintura en flechas de circulación se encuentra en buenas condiciones?",
+            "Se realiza poda de pasto y setos?",
+            "Faltan plantas y árboles en jardineras?",
+            "Los troncos de los árboles están encalados?",
+            "Se realiza el riego periódicamente?",
+            "Existen lámparas fundidas?",
+            "Se encuentra completa la plantilla de vigilancia de acuerdo a la necesidad de la operación?",
+            "El personal de vigilancia cuenta con uniforme y gafete de identificación?",
+            "El personal de vigilancia realiza los rondines en el estacionamiento?",
+            "Cuentan con radios de intercomunicación?",
+            "Cuentan con bitácora de novedades y se encuentra al día?",
+            "El estacionamiento cuenta con extintores?",
+            "Los extintores están vigentes?",
+            "Gabinetes de extintores en buenas condiciones?",
+            "Cuenta con señalización de ubicación de equipo de protección civil y rutas de evacuación en buen estado?",
+            "Cuenta con material para limpieza y sanitización?",
+            "Se lleva un control del total de pensiones?",
+            "¿Recibimos de manera semanal los ingresos y afluencias de esta unidad?"
+        ];
+
+        // Generar preguntas en la tabla
+        const tbody = document.getElementById("checklist-body");
+        preguntas.forEach((pregunta, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${pregunta}</td>
+                <td>
+                    <select class="select-box" onchange="calcularCalificacion()">
+                        <option value="Sí">Sí</option>
+                        <option value="No">No</option>
+                        <option value="N/A">N/A</option>
+                    </select>
+                </td>
+                <td><input type="text" class="input-box"></td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Función para calcular calificación
+        function calcularCalificacion() {
+            let preguntas = document.querySelectorAll("#checklist-body tr");
+            let puntaje = 100;
+
+            preguntas.forEach((row, index) => {
+                let respuesta = row.querySelector("select").value;
+                
+                if (index === 0 && respuesta === "No") {
+                    puntaje = 0; 
+                } else if (respuesta === "No") {
+                    puntaje -= 5;
+                }
+
+                if (respuesta === "No") {
+                    row.classList.add("error");
+                } else {
+                    row.classList.remove("error");
+                }
+            });
+
+            let calificacionDiv = document.getElementById("calificacion");
+            calificacionDiv.textContent = `Calificación: ${puntaje}%`;
+
+            if (puntaje >= 90) {
+                calificacionDiv.style.backgroundColor = "green";
+            } else {
+                calificacionDiv.style.backgroundColor = "red";
+            }
+        }
+    </script>
+
+</body>
+</html>
